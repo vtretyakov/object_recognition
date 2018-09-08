@@ -1,8 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 import os.path
 import numpy as np
 import scipy.misc
 import tensorflow as tf
+import cv2
 #from keras.models import load_model
 
 
@@ -44,11 +45,33 @@ class Classifier(object):
         #self.graph = tf.get_default_graph()
 
     def get_classification(self, image):
+        image_np = np.asarray(image, dtype="uint8")
+        image_np_expanded = np.expand_dims(image_np, axis=0)
+
         with self.detection_graph.as_default():
             (boxes, scores, classes, num) = self.sess.run(
                 [self.detection_boxes, self.detection_scores, self.detection_classes, self.num_detections],
                 feed_dict={self.image_tensor: image_np_expanded})
-        print(boxes, scores, classes, num)
+        boxes = np.squeeze(boxes)
+        classes = np.squeeze(classes).astype(np.int32)
+        scores = np.squeeze(scores)
+        img_cnt = 1
+        for idx, classID in enumerate(classes):
+            if classID == 10:
+                print ("found traffic light", scores[idx])
+                if scores[idx] > 0.5:
+
+                    nbox = boxes[idx]
+
+                    height = image.shape[0]
+                    width = image.shape[1]
+
+                    box = np.array([nbox[0]*height, nbox[1]*width, nbox[2]*height, nbox[3]*width]).astype(int)
+                    tl_image = image[box[0]:box[2], box[1]:box[3]]
+                    img_out = cv2.cvtColor(tl_image, cv2.COLOR_RGB2BGR)
+                    cv2.imwrite('img_samples/classified' + str(img_cnt) + '.jpg', img_out)
+                    img_cnt += 1
+        return tl_image
 
 # Execute `main()` function
 if __name__ == '__main__':
