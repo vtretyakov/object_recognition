@@ -36,14 +36,6 @@ class Classifier(object):
             self.detection_classes = self.detection_graph.get_tensor_by_name('detection_classes:0')
             self.num_detections = self.detection_graph.get_tensor_by_name('num_detections:0')
 
-    def init_classifier(self, model, width, height, channels=3):
-        self.width = width
-        self.height = height
-        self.model = model
-        self.channels = channels
-        # necessary work around to avoid troubles with keras
-        #self.graph = tf.get_default_graph()
-
     def get_classification(self, image):
         image_np = np.asarray(image, dtype="uint8")
         image_np_expanded = np.expand_dims(image_np, axis=0)
