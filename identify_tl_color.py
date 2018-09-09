@@ -39,7 +39,7 @@ def findNonZero(image):
     return counter
 
 
-def get_color(image):
+def get_color_hsv(image):
     color = 'none'
 
     image = standardize_input(image)
@@ -95,34 +95,27 @@ def get_color(image):
     cv2.waitKey(0)
     return color
 
-
-# Execute `main()` function
-if __name__ == '__main__':
-    image_file = './img_samples/simulator/classified6.jpg'
-    image_bgr = cv2.imread(image_file, cv2.IMREAD_COLOR)
-
+def get_color_lab(image_bgr):
     image_lab = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2LAB)
     l = image_lab.copy()
     # set a and b channels to 0
     l[:, :, 1] = 0
     l[:, :, 2] = 0
 
-    #cv2.imshow('LAB image l', l)
-    #cv2.waitKey(0)
-    cv2.imshow('Sample', image_bgr)
-    cv2.waitKey(0)
+    # cv2.imshow('LAB image l', l)
+    # cv2.waitKey(0)
 
     std_l = standardize_input(l)
-    #cv2.imshow('std_l', std_l)
-    #cv2.waitKey(0)
+    # cv2.imshow('std_l', std_l)
+    # cv2.waitKey(0)
 
     red_slice, yellow_slice, green_slice = slice_image(std_l)
-    #cv2.imshow('red_slice', red_slice)
-    #cv2.waitKey(0)
-    #cv2.imshow('yellow_slice', yellow_slice)
-    #cv2.waitKey(0)
-    #cv2.imshow('green_slice', green_slice)
-    #cv2.waitKey(0)
+    # cv2.imshow('red_slice', red_slice)
+    # cv2.waitKey(0)
+    # cv2.imshow('yellow_slice', yellow_slice)
+    # cv2.waitKey(0)
+    # cv2.imshow('green_slice', green_slice)
+    # cv2.waitKey(0)
 
     y, x, c = red_slice.shape
     px_sums = []
@@ -134,11 +127,19 @@ if __name__ == '__main__':
     max_value = max(px_sums)
     max_index = px_sums.index(max_value)
 
-    print ('The light is ' + color[max_index])
+    return color[max_index]
+
+# Execute `main()` function
+if __name__ == '__main__':
+    image_file = './img_samples/simulator/classified6.jpg'
+    image_bgr = cv2.imread(image_file, cv2.IMREAD_COLOR)
 
     #image = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-
     #image = scipy.misc.imread(image_file)
-    #tl_color = get_color(image)
-    #print (tl_color)
+
+    tl_color = get_color_lab(image_bgr)
+    print ('The light is ' + tl_color)
+
+    cv2.imshow('Sample', image_bgr)
+    cv2.waitKey(0)
     cv2.destroyAllWindows()
