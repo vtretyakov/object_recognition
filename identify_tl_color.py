@@ -6,7 +6,7 @@ import cv2
 
 def crop_n_blur(image):
     row = 2
-    col = 7
+    col = 6
     img = image.copy()
     img = img[row:-row, col:-col, :]
     img = cv2.GaussianBlur(img, (3, 3), 0)
@@ -17,6 +17,15 @@ def standardize_input(image):
     standard_im = cv2.resize(standard_im, (32, 32))
     standard_im = crop_n_blur(standard_im)
     return standard_im
+
+def slice_image(image):
+    img = image.copy()
+    shape = img.shape
+    slice_height = shape[0]/3
+    upper = img[0:slice_height, :, :]
+    middle = img[slice_height:2*slice_height, :, :]
+    lower = img[2*slice_height:3*slice_height, :, :]
+    return upper, middle, lower
 
 def findNonZero(image):
     rows, cols, _ = image.shape
@@ -89,7 +98,7 @@ def get_color(image):
 
 # Execute `main()` function
 if __name__ == '__main__':
-    image_file = './img_samples/simulator/classified7.jpg'
+    image_file = './img_samples/simulator/classified6.jpg'
     image_bgr = cv2.imread(image_file, cv2.IMREAD_COLOR)
 
     image_lab = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2LAB)
@@ -98,8 +107,34 @@ if __name__ == '__main__':
     l[:, :, 1] = 0
     l[:, :, 2] = 0
 
-    cv2.imshow('LAB image l', l)
+    #cv2.imshow('LAB image l', l)
+    #cv2.waitKey(0)
+    cv2.imshow('Sample', image_bgr)
     cv2.waitKey(0)
+
+    std_l = standardize_input(l)
+    #cv2.imshow('std_l', std_l)
+    #cv2.waitKey(0)
+
+    red_slice, yellow_slice, green_slice = slice_image(std_l)
+    #cv2.imshow('red_slice', red_slice)
+    #cv2.waitKey(0)
+    #cv2.imshow('yellow_slice', yellow_slice)
+    #cv2.waitKey(0)
+    #cv2.imshow('green_slice', green_slice)
+    #cv2.waitKey(0)
+
+    y, x, c = red_slice.shape
+    px_sums = []
+    color = ['RED', 'YELLOW', 'GREEN']
+    px_sums.append(np.sum(red_slice[0:y, 0:x, 0]))
+    px_sums.append(np.sum(yellow_slice[0:y, 0:x, 0]))
+    px_sums.append(np.sum(green_slice[0:y, 0:x, 0]))
+
+    max_value = max(px_sums)
+    max_index = px_sums.index(max_value)
+
+    print ('The light is ' + color[max_index])
 
     #image = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
 
