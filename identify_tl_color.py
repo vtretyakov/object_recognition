@@ -102,20 +102,20 @@ def get_color_lab(image_bgr):
     l[:, :, 1] = 0
     l[:, :, 2] = 0
 
-    # cv2.imshow('LAB image l', l)
-    # cv2.waitKey(0)
+    cv2.imshow('LAB image l', l)
+    cv2.waitKey(0)
 
     std_l = standardize_input(l)
-    # cv2.imshow('std_l', std_l)
-    # cv2.waitKey(0)
+    cv2.imshow('std_l', std_l)
+    cv2.waitKey(0)
 
     red_slice, yellow_slice, green_slice = slice_image(std_l)
-    # cv2.imshow('red_slice', red_slice)
-    # cv2.waitKey(0)
-    # cv2.imshow('yellow_slice', yellow_slice)
-    # cv2.waitKey(0)
-    # cv2.imshow('green_slice', green_slice)
-    # cv2.waitKey(0)
+    cv2.imshow('red_slice', red_slice)
+    cv2.waitKey(0)
+    cv2.imshow('yellow_slice', yellow_slice)
+    cv2.waitKey(0)
+    cv2.imshow('green_slice', green_slice)
+    cv2.waitKey(0)
 
     y, x, c = red_slice.shape
     px_sums = []
@@ -131,7 +131,7 @@ def get_color_lab(image_bgr):
 
 # Execute `main()` function
 if __name__ == '__main__':
-    image_file = './img_samples/simulator/classified6.jpg'
+    image_file = './img_samples/simulator/classified1.jpg'
     image_bgr = cv2.imread(image_file, cv2.IMREAD_COLOR)
 
     #image = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)

@@ -62,16 +62,27 @@ class Classifier(object):
                     box = np.array([nbox[0]*height, nbox[1]*width, nbox[2]*height, nbox[3]*width]).astype(int)
                     tl_image = image[box[0]:box[2], box[1]:box[3]]
                     img_out = cv2.cvtColor(tl_image, cv2.COLOR_RGB2BGR)
-                    cv2.imwrite('img_samples/simulator/classified' + str(img_cnt) + '.jpg', img_out)
+                    cv2.imwrite('img_samples/classified' + str(img_cnt) + '.jpg', img_out)
                     cv2.rectangle(image, (box[1], box[0]), (box[3], box[2]), (0, 255, 0), 2)
                     img_cnt += 1
         image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-        cv2.imwrite('img_samples/simulator/classified_box.jpg', image)
+        cv2.imwrite('img_samples/classified_box.jpg', image)
         return tl_image
+
+    def adjust_gamma(self, bgr, gamma=1.0):
+        # build a lookup table mapping the pixel values [0, 255] to
+        # their adjusted gamma values
+        invGamma = 1.0 / gamma
+        table = np.array([((i / 255.0) ** invGamma) * 255
+                          for i in np.arange(0, 256)]).astype("uint8")
+        # apply gamma correction using the lookup table
+        return cv2.LUT(bgr, table)
+
 
 # Execute `main()` function
 if __name__ == '__main__':
-    image_file = './img_samples/simulator/6.png'
+    image_file = './img_samples/test10.jpg'
     image = scipy.misc.imread(image_file)
     classifier = Classifier()
+    image = classifier.adjust_gamma(image, 0.6)
     classifier.get_classification(image)
